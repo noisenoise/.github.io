@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Frame‑by‑Frame Countdown • 30 Apr 2025 7 PM PT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #0f0;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+    }
+    h1 { font-size: 2rem; margin-bottom: .25rem; }
+    p   { margin: .25rem 0; }
+    #result { font-size: 1.75rem; margin-top: .75rem; }
+    .label { font-size: .9rem; opacity: .7; }
+  </style>
+</head>
+<body>
+  <h1>How&nbsp;much&nbsp;longer?</h1>
+  <p>Frames remaining until<br><strong>30&nbsp;Apr&nbsp;2025&nbsp;7:00&nbsp;PM&nbsp;PT</strong></p>
+  <p id="result"></p>
+  <p class="label">(24&nbsp;fps • live frame‑by‑frame)</p>
+
+  <script>
+    const FPS = 24;
+    const PACIFIC_TZ = 'America/Los_Angeles';
+    /* 30 Apr 2025 19:00 PT  →  2025‑05‑01T02:00:00Z */
+    const targetUtcMillis = Date.parse('2025-05-01T02:00:00Z');
+    const frameIntervalMs = 1000 / FPS;
+
+    function toPacific(date) {
+      const utcMillis = date.getTime() + date.getTimezoneOffset() * 60000;
+      const pacOffsetMin = new Date(date.toLocaleString('en-US', { timeZone: PACIFIC_TZ })).getTimezoneOffset();
+      return new Date(utcMillis - pacOffsetMin * 60000);
+    }
+
+    function update() {
+      const nowPacific = toPacific(new Date());
+      const diffMs = targetUtcMillis - nowPacific.getTime();
+      const framesLeft = diffMs > 0 ? Math.floor(diffMs / frameIntervalMs) : 0;
+      document.getElementById('result').textContent = framesLeft.toLocaleString();
+      if (framesLeft === 0) clearInterval(timer);
+    }
+
+    update();
+    const timer = setInterval(update, frameIntervalMs);
+  </script>
+</body>
+</html>
